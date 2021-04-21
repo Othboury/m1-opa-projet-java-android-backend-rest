@@ -19,25 +19,32 @@ public interface IUserrepository {
     /**
      *
      * save a User
-     * @param livre
+     * @param user
      */
-    public void save(Utilisateur livre);
+    public void save(Utilisateur user);
 
     /**
      *
      *  get all Users
      * @return
      */
+
     public List<Utilisateur> findAll() ;
-    public Utilisateur  find(int id) ;
+
+    /**
+     *
+     * Find a user by Id
+     * @param id
+     */
+    public Utilisateur findById(int id) ;
 
 
     /**
      *
-     * Update a Livre
+     * Update a user
      * @param
      */
-    public void update(int id) ;
+    public void update(Utilisateur user) ;
 
     /**
      *
@@ -45,6 +52,20 @@ public interface IUserrepository {
      * @param id
      */
     public void delete(int id ) ;
+
+    /**
+     *
+     * Set new Admin
+     * @param user
+     */
+    public void setAdmin(Utilisateur user);
+
+    /**
+     *
+     * Remove Admin
+     * @param user
+     */
+    public void RemoveAdmin(Utilisateur user);
 
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException;
 }

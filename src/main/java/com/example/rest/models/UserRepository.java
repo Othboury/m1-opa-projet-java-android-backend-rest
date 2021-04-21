@@ -14,6 +14,7 @@ import java.util.Observable;
 /**
  *
  * This class implement The IBibliothequeDaoRepositoryJPA
+ *
  */
 public class UserRepository extends Observable implements IUserrepository {
 
@@ -22,7 +23,7 @@ public class UserRepository extends Observable implements IUserrepository {
         entityManager.getTransaction().begin();
         entityManager.persist(utilisateur);
         entityManager.getTransaction().commit();
-        System.out.println("saved user ");
+        System.out.println("saved user : ");
 
     }
 
@@ -38,8 +39,19 @@ public class UserRepository extends Observable implements IUserrepository {
     }
 
     @Override
-    public void update(int id) {
-
+    public void update(Utilisateur user) {
+        try {
+            entityManager.getTransaction().begin();
+            Query q = entityManager.createQuery("update Utilisateur u set u.firstname = :valuefname, u.lastname = :valuelname, u.login = : valuelogin where u.id= :value");
+            q.setParameter("valuefname",  user.getFirstname());
+            q.setParameter("valuelname",  user.getLastname());
+            q.setParameter("valuelogin",  user.getLogin());
+            q.setParameter("value",  user.getId());
+            int rowsUpdated = q.executeUpdate();
+            entityManager.getTransaction().commit();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
 
@@ -51,14 +63,49 @@ public class UserRepository extends Observable implements IUserrepository {
         entityManager.getTransaction().commit();
     }
 
+    /**
+     * Set new Admin
+     *
+     * @param user
+     */
     @Override
-    public Utilisateur find(int uuid) {
+    public void setAdmin(Utilisateur user) {
+        try {
+            entityManager.getTransaction().begin();
+            Query q = entityManager.createQuery("update Utilisateur u set u.isAdmin = 1 where u.id= :value");
+            q.setParameter("value",  user.getId());
+            int rowsUpdated = q.executeUpdate();
+            entityManager.getTransaction().commit();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Remove Admin
+     *
+     * @param user
+     */
+    @Override
+    public void RemoveAdmin(Utilisateur user) {
+        try {
+            entityManager.getTransaction().begin();
+            Query q = entityManager.createQuery("update Utilisateur u set u.isAdmin = 0 where u.id= :value");
+            q.setParameter("value",  user.getId());
+            int rowsUpdated = q.executeUpdate();
+            entityManager.getTransaction().commit();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public Utilisateur findById(int uuid) {
         entityManager.getTransaction().begin();
         Utilisateur utilisateur =entityManager.find(Utilisateur.class ,uuid );
         entityManager.getTransaction().commit();
         return utilisateur;
     }
-
 
     @Override
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException {

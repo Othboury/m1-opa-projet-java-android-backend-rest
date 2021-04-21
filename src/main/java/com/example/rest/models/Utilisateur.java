@@ -25,11 +25,13 @@ public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @XmlElement
-    private int id  ;
-    private  String firstname  ;
-    private String lastname ;
-    private  String login ;
-    private String password ;
+    private int id;
+
+    private  String firstname;
+    private String lastname;
+    private  String login;
+    private String password;
+    private boolean isAdmin;
 
     public Utilisateur() {
     }
@@ -45,6 +47,7 @@ public class Utilisateur implements Serializable {
     public String getFirstname() {
         return firstname;
     }
+
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
@@ -52,6 +55,7 @@ public class Utilisateur implements Serializable {
     public String getLastname() {
         return lastname;
     }
+
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
@@ -76,6 +80,15 @@ public class Utilisateur implements Serializable {
 
         this.password = get_SHA_512_SecurePassword(password, "dlfk") ;
     }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
     public String get_SHA_512_SecurePassword(String passwordToHash, String salt){
         String generatedPassword = null;
         try {
@@ -92,6 +105,7 @@ public class Utilisateur implements Serializable {
         }
         return generatedPassword;
     }
+
 
 }
 
