@@ -21,7 +21,6 @@ import java.util.Base64;
 @Entity
 @XmlRootElement
 public class Utilisateur implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @XmlElement
@@ -73,11 +72,6 @@ public class Utilisateur implements Serializable {
     }
 
     public void setPassword(String password) {
-       /* SecureRandom random = new SecureRandom();
-        //salt
-        byte[] salt = new byte[16];
-*/
-
         this.password = get_SHA_512_SecurePassword(password, "dlfk") ;
     }
 

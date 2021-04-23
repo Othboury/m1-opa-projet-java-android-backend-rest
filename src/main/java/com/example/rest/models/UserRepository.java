@@ -13,7 +13,7 @@ import java.util.Observable;
 
 /**
  *
- * This class implement The IBibliothequeDaoRepositoryJPA
+ * This class implement The IUserrepository
  *
  */
 public class UserRepository extends Observable implements IUserrepository {
