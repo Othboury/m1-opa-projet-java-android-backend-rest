@@ -1,0 +1,19 @@
+version: '3'
+services: 
+  db:
+      image: mysql
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      environment:
+          MYSQL_ROOT_PASSWORD: YOUR_PASSWORD_HERE
+      ports: 
+          - 3308:3306
+  javaapp:
+      image: rest-image
+      container_name: rest-container
+      ports:
+          - 8091:8091
+            #volumes:
+            # - ./pipeline:/usr/share/logstash/pipeline:ro
+      depends_on:
+          - db

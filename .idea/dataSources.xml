@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="websocket_dbbb@localhost" uuid="2d1d57ae-101b-45f8-a9e8-39492b77dd89">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/websocket_dbbb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="jdbc:mysql://localhost:3306/websocket_dbbb?useSSL=false&amp;amp;serverTimezone=UT" uuid="9dafefef-a692-4b5d-b990-6c42c1449012">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/websocket_dbbb?useSSL=false&amp;amp;serverTimezone=UT</jdbc-url>
+    </data-source>
+  </component>
+</project>
