@@ -99,6 +99,17 @@ public class UserRepository extends Observable implements IUserrepository {
         }
     }
 
+    /**
+     * Remove Admin
+     *
+     * @param login
+     * @param password
+     */
+    @Override
+    public Utilisateur login(String login, String password) {
+        return null;
+    }
+
     @Override
     public Utilisateur findById(int uuid) {
         entityManager.getTransaction().begin();
@@ -142,5 +153,25 @@ public class UserRepository extends Observable implements IUserrepository {
     private static UserRepository serverInstance;
     public static EntityManager entityManager;
 
+    /*public Utilisateur findByloginpass(String login, String password) {
+        try {
+            entityManager.getTransaction().begin();
+            Utilisateur user = new Utilisateur();
+            user.setLogin(login);
+            user.setPassword(password);
+            Query q = entityManager.createQuery("select u from Utilisateur u where u.login= :value and u.password =:valuepass");
+            q.setParameter("value",  user.getLogin());
+            q.setParameter("valuepass",  user.getPassword());
+            int rowsUpdated = q.executeUpdate();
+            entityManager.getTransaction().commit();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        entityManager.getTransaction().begin();
+        Utilisateur utilisateur =entityManager.find(Utilisateur.class ,login, password);
+        entityManager.getTransaction().commit();
+        return utilisateur;
+    }*/
 }
 

@@ -67,5 +67,13 @@ public interface IUserrepository {
      */
     public void RemoveAdmin(Utilisateur user);
 
+    /**
+     *
+     * Remove Admin
+     * @param login
+     * @param password
+     */
+    public Utilisateur login(String login, String password) ;
+
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException;
 }
