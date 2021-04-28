@@ -1,6 +1,5 @@
 package com.example.rest.security;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -96,14 +95,9 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
               }
           });
 
-
-
         } catch (JwtException e) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Wrong JWT token. " + e.getLocalizedMessage()).build());
         }
-
-
-
     }
 }

@@ -38,6 +38,12 @@ public class RestService {
 
 		return "Access with JWT ok for " + securityContext.getUserPrincipal().getName();
 	}
+	/**
+	 * a GET method to obtain a JWT token with basic authentication for users.
+	 *
+	 * @param securityContext the security context
+	 * @return the base64 encoded JWT Token.
+	 */
 	@Path("/auth")
 	@GET
 	@BasicAuth
@@ -56,12 +62,10 @@ public class RestService {
 				.setExpiration(Date.from(LocalDateTime.now().plus(15, ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()))
 				.signWith(KEY).compact() ;
 	}
-
-
 	/**
-     * Method handling HTTP GET requests. The returned livres will be sent
+     * Method handling HTTP GET requests. The returned users will be sent
      * to the client as JSON or XML  media type.
-     * @return Array of Livres  that will be returned as a JSON or XML response.
+     * @return Array of Utilisateurs  that will be returned as a JSON or XML response.
      */
 	@Path("/utilisateurs")
     @GET
@@ -70,7 +74,6 @@ public class RestService {
         System.out.println(userRepository.findAll());
         return userRepository.findAll();
     }
-
 	/**
 	 * Method handling HTTP GET requests. The returned users will be sent
 	 * to the client as JSON or XML media type.
@@ -85,20 +88,18 @@ public class RestService {
 		System.out.println(userRepository.findById(idP)+ "par id ");
     	return userRepository.findById(idP);
 	}
-
 	/**
-	 * Method handling HTTP PUT requests.
-	 * to the client as JSON or XML media type.
-	 *
+	 * Method handling HTTP POST method to obtain add a new users with token. Secured with JWTAuth
+	 * @return the base64 encoded JWT Token.
 	 */
 	@Path("/utilisateurs")
+	@JWTAuth
     @POST
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN})
 	public String create(Utilisateur utilisateur ){
     	userRepository.save(utilisateur);
     	return "POST done";
 	}
-
 	/**
 	 * Method handling HTTP DELETE requests.
 	 *
@@ -147,8 +148,5 @@ public class RestService {
 		userRepository.update(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
-
-
-
 }
 
