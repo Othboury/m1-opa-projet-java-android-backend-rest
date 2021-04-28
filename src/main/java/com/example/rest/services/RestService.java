@@ -1,21 +1,63 @@
 package com.example.rest.services;
 
+import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import com.example.rest.models.UserRepository;
 import com.example.rest.models.Utilisateur;
+import com.example.rest.security.BasicAuth;
+import com.example.rest.security.JWTAuth;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Path("/android")
 public class RestService {
 
+	public static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private UserRepository userRepository;
 
     public RestService(){
 		userRepository = UserRepository.getInstance();
 	}
+
+	@GET
+	@Path("/secure")
+	@JWTAuth
+	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+	public String securedByJWTAdminOnly(@Context SecurityContext securityContext) {
+
+		return "Access with JWT ok for " + securityContext.getUserPrincipal().getName();
+	}
+	@Path("/auth")
+	@GET
+	@BasicAuth
+	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
+	@Consumes({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
+	public String authenticate(@Context SecurityContext securityContext){
+
+		System.out.println(securityContext);
+		System.out.println(securityContext.getUserPrincipal().getName());
+
+		return Jwts.builder()
+				.setIssuer("sample-jaxrs")
+				.setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
+				.setSubject(securityContext.getUserPrincipal().getName())
+				.claim("login","pcisse200")
+				.setExpiration(Date.from(LocalDateTime.now().plus(15, ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()))
+				.signWith(KEY).compact() ;
+	}
+
+
 	/**
      * Method handling HTTP GET requests. The returned livres will be sent
      * to the client as JSON or XML  media type.
@@ -105,5 +147,8 @@ public class RestService {
 		userRepository.update(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
+
+
+
 }
 
