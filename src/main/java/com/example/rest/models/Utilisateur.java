@@ -68,8 +68,9 @@ public class Utilisateur implements Serializable {
     }
 
     public String getPassword() {
-        return password;
+        return password ;
     }
+
 
     public void setPassword(String password) {
         this.password = get_SHA_512_SecurePassword(password, "dlfk") ;
@@ -99,7 +100,6 @@ public class Utilisateur implements Serializable {
         }
         return generatedPassword;
     }
-
 
 }
 

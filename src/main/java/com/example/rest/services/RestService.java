@@ -22,13 +22,25 @@ import io.jsonwebtoken.security.Keys;
 
 @Path("/android")
 public class RestService {
-
 	public static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private UserRepository userRepository;
 
     public RestService(){
 		userRepository = UserRepository.getInstance();
 	}
+
+	//test  ssl
+	@GET
+	@Path("/test")
+	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+	public String secur() {
+
+		return " TLS SECURE ";
+	}
+
+
+
+	//tets
 
 	@GET
 	@Path("/secure")
@@ -47,20 +59,20 @@ public class RestService {
 	@Path("/auth")
 	@GET
 	@BasicAuth
-	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
+	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Consumes({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
 	public String authenticate(@Context SecurityContext securityContext){
 
 		System.out.println(securityContext);
 		System.out.println(securityContext.getUserPrincipal().getName());
 
-		return Jwts.builder()
+		return "{ Token : "+Jwts.builder()
 				.setIssuer("sample-jaxrs")
 				.setIssuedAt(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))
 				.setSubject(securityContext.getUserPrincipal().getName())
 				.claim("login","pcisse200")
 				.setExpiration(Date.from(LocalDateTime.now().plus(15, ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()))
-				.signWith(KEY).compact() ;
+				.signWith(KEY).compact()+'}' ;
 	}
 	/**
      * Method handling HTTP GET requests. The returned users will be sent
@@ -103,16 +115,16 @@ public class RestService {
 	/**
 	 * Method handling HTTP DELETE requests.
 	 *
-	 * @return String that will be returned as a text/plain response.
+	 * @return String that will be returned as a text/plain response. Secured by JWTAuth
 	 */
 	@Path("/utilisateurs/{id}")
+	@JWTAuth
 	@DELETE
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
 	public String delete(@PathParam(value  = "id")int id ){
 		userRepository.delete(id);
 		return id+"is deleted";
 	}
-
 	/**
 	 * Method handling HTTP PUY requests.
 	 *
@@ -126,7 +138,6 @@ public class RestService {
 		userRepository.setAdmin(user);
 		return user.getLogin()+" is currently an admin.";
 	}
-
 	@Path("/noadmin/{id}")
 	@PUT
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
@@ -135,7 +146,6 @@ public class RestService {
 		userRepository.RemoveAdmin(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
-
 	@Path("/utilisateurs/{id}/{fname}/{lname}/{login}")
 	@PUT
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
@@ -148,5 +158,19 @@ public class RestService {
 		userRepository.update(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
+
+/*
+	@Path("/api")
+	@PUT
+	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
+	public String calculPosition(@PathParam(value  = "id")int id, @PathParam(value = "fname") String fname,
+							 @PathParam(value ="lname") String lname, @PathParam(value = "login") String login){
+		Utilisateur user = userRepository.findById(id);
+		user.setFirstname(fname);
+		user.setLastname(lname);
+		user.setLogin(login);
+		userRepository.update(user);
+		return user.getLogin()+" is no longer an admin.";
+	}*/
 }
 
