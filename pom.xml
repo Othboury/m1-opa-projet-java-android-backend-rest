@@ -111,7 +111,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- HTTP2 -->
+        <!-- HTTP2
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http2</artifactId>
@@ -129,6 +129,8 @@
             <artifactId>glassfish-corba-omgapi</artifactId>
             <version>4.2.1</version>
         </dependency>
+
+        -->
     </dependencies>
 
     <build>

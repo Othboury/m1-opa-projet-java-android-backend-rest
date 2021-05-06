@@ -18,12 +18,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
+
 @Entity
 @XmlRootElement
 public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @XmlElement
     private int id;
 
     private  String firstname;

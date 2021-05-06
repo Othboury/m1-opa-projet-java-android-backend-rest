@@ -14,6 +14,9 @@ import javax.ws.rs.core.SecurityContext;
 
 import com.example.rest.models.UserRepository;
 import com.example.rest.models.Utilisateur;
+
+import com.example.rest.models.WapRepository;
+import com.example.rest.models.WifiPoint;
 import com.example.rest.security.BasicAuth;
 import com.example.rest.security.JWTAuth;
 import io.jsonwebtoken.Jwts;
@@ -23,32 +26,11 @@ import io.jsonwebtoken.security.Keys;
 @Path("/android")
 public class RestService {
 	public static final Key KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private UserRepository userRepository;
-
-    public RestService(){
+	private UserRepository userRepository;
+	private WapRepository wapRepository ;
+	public RestService(){
 		userRepository = UserRepository.getInstance();
-	}
-
-	//test  ssl
-	@GET
-	@Path("/test")
-	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-	public String secur() {
-
-		return " TLS SECURE ";
-	}
-
-
-
-	//tets
-
-	@GET
-	@Path("/secure")
-	@JWTAuth
-	@Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
-	public String securedByJWTAdminOnly(@Context SecurityContext securityContext) {
-
-		return "Access with JWT ok for " + securityContext.getUserPrincipal().getName();
+		wapRepository  = WapRepository.getInstance() ;
 	}
 	/**
 	 * a GET method to obtain a JWT token with basic authentication for users.
@@ -62,7 +44,7 @@ public class RestService {
 	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Consumes({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
 	public String authenticate(@Context SecurityContext securityContext){
-
+		System.out.println("value of entity manager"+userRepository);
 		System.out.println(securityContext);
 		System.out.println(securityContext.getUserPrincipal().getName());
 
@@ -75,42 +57,40 @@ public class RestService {
 				.signWith(KEY).compact()+'}' ;
 	}
 	/**
-     * Method handling HTTP GET requests. The returned users will be sent
-     * to the client as JSON or XML  media type.
-     * @return Array of Utilisateurs  that will be returned as a JSON or XML response.
-     */
-	@Path("/utilisateurs")
-    @GET
-    @Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
-    public List<Utilisateur> getUtilisateurs(){
-        System.out.println(userRepository.findAll());
-        return userRepository.findAll();
-    }
-	/**
 	 * Method handling HTTP GET requests. The returned users will be sent
-	 * to the client as JSON or XML media type.
-	 *
-	 * @return User that will be returned as a JSON or XML response.
+	 * to the client as JSON or XML  media type.
+	 * @return Array of Utilisateurs  that will be returned as a JSON or XML response.
 	 */
-	@Path("/utilisateurs/{idP}")
+	@Path("/utilisateurs")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
-    public Utilisateur getUtilisateur(@PathParam(value  = "idP")int idP){
-		System.out.println("search by identity");
-		System.out.println(userRepository.findById(idP)+ "par id ");
-    	return userRepository.findById(idP);
+	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
+	public List<Utilisateur> getUtilisateurs(){
+		System.out.println(userRepository.findAll());
+		return userRepository.findAll();
 	}
 	/**
 	 * Method handling HTTP POST method to obtain add a new users with token. Secured with JWTAuth
 	 * @return the base64 encoded JWT Token.
 	 */
 	@Path("/utilisateurs")
+	@POST
 	@JWTAuth
-    @POST
-	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN})
+	@Consumes({MediaType.APPLICATION_JSON})
 	public String create(Utilisateur utilisateur ){
-    	userRepository.save(utilisateur);
-    	return "POST done";
+		userRepository.save(utilisateur);
+		return "l'utilisateur a été ajouté dans la base de données";
+	}
+	/**
+	 * Method handling HTTP GET requests. The returned users will be sent
+	 * to the client as JSON or XML media type.
+	 *
+	 * @return User that will be returned as a JSON or XML response.
+	 */
+	@Path("/utilisateurs/{id}")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
+	public Utilisateur getUtilisateur(@PathParam(value  = "id")int idP){
+		return userRepository.findById(idP);
 	}
 	/**
 	 * Method handling HTTP DELETE requests.
@@ -123,7 +103,7 @@ public class RestService {
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
 	public String delete(@PathParam(value  = "id")int id ){
 		userRepository.delete(id);
-		return id+"is deleted";
+		return "user"+id+"is deleted";
 	}
 	/**
 	 * Method handling HTTP PUY requests.
@@ -146,6 +126,16 @@ public class RestService {
 		userRepository.RemoveAdmin(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
+
+	/**
+	 *
+	 * mettre à jour les informations d'un utilisateur
+	 * @param id
+	 * @param fname
+	 * @param lname
+	 * @param login
+	 * @return
+	 */
 	@Path("/utilisateurs/{id}/{fname}/{lname}/{login}")
 	@PUT
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
@@ -158,19 +148,30 @@ public class RestService {
 		userRepository.update(user);
 		return user.getLogin()+" is no longer an admin.";
 	}
+	/**
+	 *
+	 * add new scan data in the database
+	 * @param wifiPoint
+	 * @return
+	 */
+	@Path("/wap")
+	@POST
+	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML , MediaType.TEXT_PLAIN , MediaType.APPLICATION_FORM_URLENCODED})
+	public String find(WifiPoint wifiPoint ){
+		wapRepository.save(wifiPoint);
+		return "wifi data added  successfully";
+	}
 
-/*
-	@Path("/api")
-	@PUT
-	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
-	public String calculPosition(@PathParam(value  = "id")int id, @PathParam(value = "fname") String fname,
-							 @PathParam(value ="lname") String lname, @PathParam(value = "login") String login){
-		Utilisateur user = userRepository.findById(id);
-		user.setFirstname(fname);
-		user.setLastname(lname);
-		user.setLogin(login);
-		userRepository.update(user);
-		return user.getLogin()+" is no longer an admin.";
-	}*/
+	/**
+	 *
+	 * get All wifi Accees Point data
+	 * @return
+	 */
+	@Path("/wap")
+	@GET
+	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML , MediaType.TEXT_PLAIN , MediaType.APPLICATION_FORM_URLENCODED})
+	public List<WifiPoint> find(){
+		return wapRepository.findAll();
+	}
 }
 
