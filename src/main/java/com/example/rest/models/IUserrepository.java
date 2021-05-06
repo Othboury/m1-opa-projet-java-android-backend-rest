@@ -8,7 +8,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.UUID;
 
-
 /**
  *
  *  This Interface describe all the interaction with the database
@@ -38,28 +37,24 @@ public interface IUserrepository {
      */
     public Utilisateur findById(int id) ;
 
-
     /**
      *
      * Update a user
      * @param
      */
     public void update(Utilisateur user) ;
-
     /**
      *
      * Delete a User by Id
      * @param id
      */
     public void delete(int id ) ;
-
     /**
      *
      * Set new Admin
      * @param user
      */
     public void setAdmin(Utilisateur user);
-
     /**
      *
      * Remove Admin

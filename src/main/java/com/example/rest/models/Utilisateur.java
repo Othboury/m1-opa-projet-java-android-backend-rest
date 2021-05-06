@@ -18,12 +18,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
+
 @Entity
 @XmlRootElement
 public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @XmlElement
     private int id;
 
     private  String firstname;
@@ -68,8 +68,9 @@ public class Utilisateur implements Serializable {
     }
 
     public String getPassword() {
-        return password;
+        return password ;
     }
+
 
     public void setPassword(String password) {
         this.password = get_SHA_512_SecurePassword(password, "dlfk") ;
@@ -99,7 +100,6 @@ public class Utilisateur implements Serializable {
         }
         return generatedPassword;
     }
-
 
 }
 

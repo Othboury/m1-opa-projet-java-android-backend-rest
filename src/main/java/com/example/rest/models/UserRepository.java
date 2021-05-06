@@ -36,11 +36,13 @@ public class UserRepository extends Observable implements IUserrepository {
         notifyObservers();
 
         return q.getResultList();
+
     }
 
     @Override
     public void update(Utilisateur user) {
         try {
+            
             entityManager.getTransaction().begin();
             Query q = entityManager.createQuery("update Utilisateur u set u.firstname = :valuefname, u.lastname = :valuelname, u.login = : valuelogin where u.id= :value");
             q.setParameter("valuefname",  user.getFirstname());
@@ -120,10 +122,8 @@ public class UserRepository extends Observable implements IUserrepository {
         aut2.setLastname("CISSE");
         aut2.setLogin("pcisse200");
         aut2.setPassword("Djingue1994522");
-        entityManager.persist(aut2);;
-
+        entityManager.persist(aut2);
         entityManager.getTransaction().commit();
-
     }
 
     public UserRepository() {

@@ -1,11 +1,16 @@
 package com.example.rest;
 import com.example.rest.models.UserRepository;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -37,12 +42,12 @@ public class Main {
 
 UserRepository userRepository = UserRepository.getInstance();
 
-
 userRepository.init();
 
         /*System.out.println(bibliothequeDaoRepositoryJPA.serachInCategory("" +
                 "%a%"));
-*/
+       */
+
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
@@ -50,4 +55,3 @@ userRepository.init();
         server.stop();
     }
 }
-
