@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -10,8 +11,7 @@
         <module name="m1-opa-projet-java-android-backend-rest" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="jersey-service" target="1.8" />
+    <bytecodeTargetLevel target="14">
       <module name="m1-opa-projet-java-android-backend-rest" target="1.8" />
     </bytecodeTargetLevel>
   </component>

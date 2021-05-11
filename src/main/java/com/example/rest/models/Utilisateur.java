@@ -1,6 +1,8 @@
 package com.example.rest.models;
 
 
+import lombok.*;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.persistence.Entity;
@@ -17,10 +19,15 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.Random;
 
 
+@Data
+@Getter @Setter
+@Builder
 @Entity
 @XmlRootElement
+@NoArgsConstructor
 public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,60 +38,40 @@ public class Utilisateur implements Serializable {
     private  String login;
     private String password;
     private boolean isAdmin;
+    private  String salt ;
 
-    public Utilisateur() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
+    public Utilisateur(int id, String firstname, String lastname, String login, String password, boolean isAdmin, String salt) {
         this.id = id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
         this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
         this.lastname = lastname;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
         this.login = login;
+        this.password = password;
+        this.isAdmin = isAdmin;
+        this.salt = salt;
     }
 
-    public String getPassword() {
-        return password ;
+    public void   setPassword(String password) {
+        //string containing allowed characters, modify according to your needs
+        String strAllowedCharacters =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        //initialize Random
+        Random random = new Random();
+        StringBuilder sbRandomString = new StringBuilder(20);
+
+        for(int i = 0 ; i < 20; i++){
+
+            //get random integer between 0 and string length
+            int randomInt = random.nextInt(strAllowedCharacters.length());
+
+            //get char from randomInt index from string and append in StringBuilder
+            sbRandomString.append( strAllowedCharacters.charAt(randomInt) );
+        }
+        //this.salt  = sbRandomString.toString() ;
+        this.password = get_SHA_512_SecurePassword(password, "salt") ;
     }
 
-
-    public void setPassword(String password) {
-        this.password = get_SHA_512_SecurePassword(password, "dlfk") ;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-    public String get_SHA_512_SecurePassword(String passwordToHash, String salt){
+    public String  get_SHA_512_SecurePassword(String passwordToHash, String salt){
         String generatedPassword = null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");

@@ -4,11 +4,9 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
  http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
-
 <persistence-unit name="persistence">
     <description>Hibernate Entity Manager Example</description>
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/m2021rest?useSSL=false&amp;serverTimezone=UTC" />
@@ -16,11 +14,10 @@
       <property name="javax.persistence.jdbc.user" value="root" />
       <property name="javax.persistence.jdbc.password" value="" />
       <property name="hibernate.show_sql" value="true" />
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="create"/>
 
       <property name="hibernate.dialect"
                 value="org.hibernate.dialect.MySQL8Dialect" />
     </properties>
-
   </persistence-unit>
 </persistence>

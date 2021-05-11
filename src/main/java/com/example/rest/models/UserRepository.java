@@ -1,10 +1,15 @@
 package com.example.rest.models;
 
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.rmi.CORBA.Util;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
@@ -16,7 +21,11 @@ import java.util.Observable;
  * This class implement The IUserrepository
  *
  */
+@Data
+@Getter @Setter
 public class UserRepository extends Observable implements IUserrepository {
+
+    Utilisateur currentUser ;
 
     @Override
     public void save(Utilisateur utilisateur) {
@@ -112,18 +121,41 @@ public class UserRepository extends Observable implements IUserrepository {
     @Override
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException {
         entityManager.getTransaction().begin();
-        Utilisateur aut1 =  new Utilisateur() ;
-        aut1.setFirstname("charles");
-        aut1.setLastname("biancheri");
-        aut1.setPassword("Djingue1994@");
+        Utilisateur  aut1 = Utilisateur.builder()
+                .firstname("pape mor")
+                .lastname("cisse")
+                .login("pucisse200")
+                .password("Djingue158#")
+                .isAdmin(true)
+                .build();
+        Utilisateur  aut2 = Utilisateur.builder()
+                .firstname("admin")
+                .lastname("admin")
+                .login("admin")
+                .password("admin")
+                .isAdmin(false)
+                .build();
+
         entityManager.persist(aut1);
-        Utilisateur aut2 =  new Utilisateur() ;
-        aut2.setFirstname("Pape Mor ");
-        aut2.setLastname("CISSE");
-        aut2.setLogin("pcisse200");
-        aut2.setPassword("Djingue1994522");
+
         entityManager.persist(aut2);
         entityManager.getTransaction().commit();
+    }
+    @Override
+    public boolean exist(String login, String password) {
+         currentUser  = new Utilisateur() ;
+        boolean bool = false ;
+        currentUser.setLogin(login);
+        currentUser.setPassword(password);
+
+        List<Utilisateur>  users  = findAll() ;
+
+        for (Utilisateur use : users){
+            System.out.println(use.getPassword());
+            if(use.getPassword().equals((currentUser.getPassword()))){ bool=true;
+            currentUser = use ;}
+        }
+        return bool;
     }
 
     public UserRepository() {

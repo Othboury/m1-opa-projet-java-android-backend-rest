@@ -1,6 +1,7 @@
 package com.example.rest.client;
 
 
+import com.example.rest.models.UserRepository;
 import lombok.extern.java.Log;
 import org.glassfish.jersey.client.ClientResponse;
 
@@ -13,10 +14,12 @@ import javax.ws.rs.core.MediaType;
 /**
  * Created by bruno on 04/11/14.
  */
-
 @Log
 public class RestClient {
     public static void main(String[] args) {
+
+        UserRepository  repository = UserRepository.getInstance() ;
+        System.out.println(repository.exist("pcisse200" , "Djingue1994@")) ;
         Client client = ClientBuilder.newClient();
         WebTarget webResource = client.target("http://localhost:8091");
 

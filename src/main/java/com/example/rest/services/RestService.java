@@ -1,5 +1,7 @@
 package com.example.rest.services;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -7,11 +9,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import antlr.StringUtils;
 import com.example.rest.models.UserRepository;
 import com.example.rest.models.Utilisateur;
 
@@ -22,6 +27,7 @@ import com.example.rest.security.JWTAuth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jdk.nashorn.internal.objects.annotations.Getter;
 
 @Path("/android")
 public class RestService {
@@ -39,7 +45,8 @@ public class RestService {
 	 * @return the base64 encoded JWT Token.
 	 */
 	@Path("/auth")
-	@GET
+	@POST
+	@RolesAllowed({"ADMIN"})
 	@BasicAuth
 	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Consumes({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
@@ -54,7 +61,7 @@ public class RestService {
 				.setSubject(securityContext.getUserPrincipal().getName())
 				.claim("login","pcisse200")
 				.setExpiration(Date.from(LocalDateTime.now().plus(15, ChronoUnit.MINUTES).atZone(ZoneId.systemDefault()).toInstant()))
-				.signWith(KEY).compact()+'}' ;
+				.signWith(KEY).compact()+'}';
 	}
 	/**
 	 * Method handling HTTP GET requests. The returned users will be sent
@@ -73,6 +80,7 @@ public class RestService {
 	 * @return the base64 encoded JWT Token.
 	 */
 	@Path("/utilisateurs")
+    @RolesAllowed({"ADMIN"})
 	@POST
 	@JWTAuth
 	@Consumes({MediaType.APPLICATION_JSON})
@@ -99,32 +107,12 @@ public class RestService {
 	 */
 	@Path("/utilisateurs/{id}")
 	@JWTAuth
+	@RolesAllowed("ADMIN")
 	@DELETE
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
 	public String delete(@PathParam(value  = "id")int id ){
 		userRepository.delete(id);
 		return "user"+id+"is deleted";
-	}
-	/**
-	 * Method handling HTTP PUY requests.
-	 *
-	 * @return String that will be returned as a text/plain response.
-	 */
-	@Path("/admin/{id}")
-	@PUT
-	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
-	public String setAdmin(@PathParam(value  = "id")int id ){
-		Utilisateur user = userRepository.findById(id);
-		userRepository.setAdmin(user);
-		return user.getLogin()+" is currently an admin.";
-	}
-	@Path("/noadmin/{id}")
-	@PUT
-	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
-	public String removeAdmin(@PathParam(value  = "id")int id ){
-		Utilisateur user = userRepository.findById(id);
-		userRepository.RemoveAdmin(user);
-		return user.getLogin()+" is no longer an admin.";
 	}
 
 	/**
@@ -138,6 +126,8 @@ public class RestService {
 	 */
 	@Path("/utilisateurs/{id}/{fname}/{lname}/{login}")
 	@PUT
+	@JWTAuth
+	@RolesAllowed("ADMIN")
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML})
 	public String updateUser(@PathParam(value  = "id")int id, @PathParam(value = "fname") String fname,
 							 @PathParam(value ="lname") String lname, @PathParam(value = "login") String login){
@@ -156,6 +146,8 @@ public class RestService {
 	 */
 	@Path("/wap")
 	@POST
+	@RolesAllowed("ADMIM")
+	@JWTAuth
 	@Consumes({MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML , MediaType.TEXT_PLAIN , MediaType.APPLICATION_FORM_URLENCODED})
 	public String find(WifiPoint wifiPoint ){
 		wapRepository.save(wifiPoint);
@@ -173,5 +165,21 @@ public class RestService {
 	public List<WifiPoint> find(){
 		return wapRepository.findAll();
 	}
+
+	/**
+	 *
+	 * entrypoint for the flask server  :  cette  methode permet d'appeller le server flask pour predire la salle.
+	 * @return
+	 */
+	@POST
+	@Path("/predict")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response redirecting() throws Exception
+	{
+		URI targetURIForRedirection = new URI("http://127.0.0.1:5000/predict");
+		return Response.seeOther(targetURIForRedirection).build();
+	}
+
+
 }
 
