@@ -65,18 +65,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 
             if (userRepository.exist(username, password)){
-                //We check to the role
-               /* if(!userRepository.getCurrentUser().isAdmin()){
-                    System.out.println("current"+ userRepository.getCurrentUser().toString());
-                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                            .entity("you have not right access").build());
-                }*/
-                //checkons le role
-                if (method.isAnnotationPresent(RolesAllowed.class)) {
-                    RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
-                    String[] rolesSet = rolesAnnotation.value() ;
-                    System.out.println("les roles" + rolesSet[0]);
 
+                //check the role
+                if (method.isAnnotationPresent(RolesAllowed.class)) {
                     if(!userRepository.getCurrentUser().isAdmin()){
                         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                                 .entity("you have not right access").build());

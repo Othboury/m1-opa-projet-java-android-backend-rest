@@ -65,10 +65,10 @@ public class Utilisateur implements Serializable {
             int randomInt = random.nextInt(strAllowedCharacters.length());
 
             //get char from randomInt index from string and append in StringBuilder
-            sbRandomString.append( strAllowedCharacters.charAt(randomInt) );
+            sbRandomString.append(strAllowedCharacters.charAt(randomInt) );
         }
         //this.salt  = sbRandomString.toString() ;
-        this.password = get_SHA_512_SecurePassword(password, "salt") ;
+        this.password = get_SHA_512_SecurePassword(password, "salt");
     }
 
     public String  get_SHA_512_SecurePassword(String passwordToHash, String salt){

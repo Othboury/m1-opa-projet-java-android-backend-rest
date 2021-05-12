@@ -10,7 +10,6 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -33,6 +32,8 @@ public class Main {
         // create a resource config that scans for JAX-RS resources and providers
         // in com.example.rest package
         final ResourceConfig rc = new ResourceConfig().packages("com.example.rest" , "com.example.rest.services");
+
+
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
 
@@ -55,14 +56,15 @@ userRepository.init();
        */
 
         final HttpServer server = startServer();
-        server.getServerConfiguration().addHttpHandler(new HttpHandler() {
+       /* server.getServerConfiguration().addHttpHandler(new HttpHandler() {
             @Override
             public void service(Request request, Response response) throws Exception {
-               // response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-                //response.setHeader("Access-Control-Allow-Headers", "Origin, X-Request-With, Content-Type, Accept");
-
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("Access-Control-Allow-Credentials", "true");
+                response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+                response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
             }
-        });
+        });*/
 
         //server.setHeader("Access-Control-Allow-Origin" , "*");
        //addTLSandHTTP2(server) ;

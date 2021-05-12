@@ -125,16 +125,16 @@ public class UserRepository extends Observable implements IUserrepository {
                 .firstname("pape mor")
                 .lastname("cisse")
                 .login("pucisse200")
-                .password("Djingue158#")
                 .isAdmin(true)
                 .build();
+        aut1.setPassword("Djingue1994@");
         Utilisateur  aut2 = Utilisateur.builder()
                 .firstname("admin")
                 .lastname("admin")
                 .login("admin")
-                .password("admin")
                 .isAdmin(false)
                 .build();
+        aut2.setPassword("admin");
 
         entityManager.persist(aut1);
 

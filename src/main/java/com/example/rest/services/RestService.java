@@ -23,6 +23,7 @@ import com.example.rest.models.Utilisateur;
 import com.example.rest.models.WapRepository;
 import com.example.rest.models.WifiPoint;
 import com.example.rest.security.BasicAuth;
+import com.example.rest.security.CorsFilter;
 import com.example.rest.security.JWTAuth;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,7 +47,6 @@ public class RestService {
 	 */
 	@Path("/auth")
 	@POST
-	@RolesAllowed({"ADMIN"})
 	@BasicAuth
 	@Produces({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML, MediaType.TEXT_XML})
 	@Consumes({MediaType.APPLICATION_JSON ,MediaType.APPLICATION_XML})
@@ -67,6 +67,8 @@ public class RestService {
 	 * Method handling HTTP GET requests. The returned users will be sent
 	 * to the client as JSON or XML  media type.
 	 * @return Array of Utilisateurs  that will be returned as a JSON or XML response.
+	 *
+	 *  ACCESS WITHOUT TOKEN
 	 */
 	@Path("/utilisateurs")
 	@GET
@@ -78,6 +80,8 @@ public class RestService {
 	/**
 	 * Method handling HTTP POST method to obtain add a new users with token. Secured with JWTAuth
 	 * @return the base64 encoded JWT Token.
+	 *
+	 * ACCESS WITH TOKEN AND ADMIN
 	 */
 	@Path("/utilisateurs")
     @RolesAllowed({"ADMIN"})
@@ -93,6 +97,7 @@ public class RestService {
 	 * to the client as JSON or XML media type.
 	 *
 	 * @return User that will be returned as a JSON or XML response.
+	 *
 	 */
 	@Path("/utilisateurs/{id}")
 	@GET
@@ -104,6 +109,7 @@ public class RestService {
 	 * Method handling HTTP DELETE requests.
 	 *
 	 * @return String that will be returned as a text/plain response. Secured by JWTAuth
+	 *
 	 */
 	@Path("/utilisateurs/{id}")
 	@JWTAuth
