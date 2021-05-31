@@ -1,19 +1,47 @@
 version: '3'
 services: 
-  db:
-      image: mysql
-      command: --default-authentication-plugin=mysql_native_password
+  mysql:
+      image: mysql:latest
       restart: always
+      container_name: mysql
       environment:
-          MYSQL_ROOT_PASSWORD: YOUR_PASSWORD_HERE
+          MYSQL_ROOT_PASSWORD: admin
       ports: 
-          - 3308:3306
-  javaapp:
-      image: rest-image
-      container_name: rest-container
+          - 3307:3306
+  opaback:
+      image: opaback
+      container_name: opaback
+      environment:
+        MYSQL_ROOT_PASSWORD: MAVEN_CONFIG=/var/maven/.m2
       ports:
           - 8091:8091
             #volumes:
             # - ./pipeline:/usr/share/logstash/pipeline:ro
+      volumes:
+          - C:\Users\Utilisateur\.m2:/var/maven/.m2
+          - C:\Users\Utilisateur\.config:/var/maven/.config
       depends_on:
-          - db
+          - mysql
+          - opaflask
+       # - ./pipeline:/usr/share/logstash/pipeline:ro
+  notebook:
+        image: jupyter/datascience-notebook:r-4.0.3
+        container_name: notebook
+        ports:
+             - 9001:8888
+                #volumes:
+                # - ./pipeline:/usr/share/logstash/pipeline:ro
+        volumes:
+             - C:\m1-opa-projet-flask-reseaudeneurone-projet-2021:/home/jovyan/work
+  opaflask:
+        image: opaflask
+        container_name: opaflask
+        ports:
+             - 6000:6000
+  frontend:
+        image: opa-fron
+        container_name: frontend
+        ports:
+             - 4300:80
+        depends_on: 
+            - opaback

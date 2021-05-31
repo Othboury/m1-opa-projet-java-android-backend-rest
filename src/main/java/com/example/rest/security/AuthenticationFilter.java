@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 
 import javax.annotation.Priority;
 import javax.annotation.security.RolesAllowed;
-import javax.jws.soap.SOAPBinding;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -20,7 +19,6 @@ import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
 
-import java.util.*;
 @BasicAuth
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -73,10 +71,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                                 .entity("you have not right access").build());
 
                     }
-
-
-
-
                 }
 
                 System.out.println(userRepository.exist(username, password));
@@ -109,9 +103,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 return;
             }
         }
-        /*Response unauhorizedStatus = Response.status(Response.Status.UNAUTHORIZED).entity("User cannot access the ressource").build();
-        requestContext.abortWith((unauhorizedStatus));*/
-            }
 
-        }
+    }
+
+}
 

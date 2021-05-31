@@ -72,8 +72,6 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
                     .parseClaimsJws(compactJwt);
             username = jws.getBody().getSubject();
 
-            System.out.println(username + "element" + userRepository.getCurrentUser().isAdmin());
-
             //We build a new securitycontext to transmit the security data to JAX-RS
             String finalUsername = username;
             requestContext.setSecurityContext(new SecurityContext() {

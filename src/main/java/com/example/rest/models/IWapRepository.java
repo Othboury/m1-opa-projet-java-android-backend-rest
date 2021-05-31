@@ -4,15 +4,13 @@ import java.util.List;
 
 public interface IWapRepository {
     /**
-     *
-     * save a User
+     *  Save a WifiPoint
      * @param wifiPoint
      */
     public void save(WifiPoint wifiPoint);
 
     /**
-     *
-     *  get all Users
+     *  Fetch all WifiPoints
      * @return
      */
     public List<WifiPoint> findAll() ;

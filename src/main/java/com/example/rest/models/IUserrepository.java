@@ -1,12 +1,8 @@
 package com.example.rest.models;
-
-import org.glassfish.jersey.internal.util.Producer;
-
-import javax.rmi.CORBA.Util;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  *
@@ -17,52 +13,43 @@ public interface IUserrepository {
 
     /**
      *
-     * save a User
+     * Add a new user
      * @param user
      */
     public void save(Utilisateur user);
-
     /**
-     *
-     *  get all Users
-     * @return
+     *  Fetch all users
      */
-
     public List<Utilisateur> findAll() ;
-
     /**
-     *
-     * Find a user by Id
+     * Find an user by his id
      * @param id
      */
     public Utilisateur findById(int id) ;
-
     /**
      *
-     * Update a user
-     * @param
+     * Update an user infos
      */
     public void update(Utilisateur user) ;
     /**
      *
-     * Delete a User by Id
+     * Delete an User by Id
      * @param id
      */
     public void delete(int id ) ;
-    /**
-     *
-     * Set new Admin
-     * @param user
-     */
-    public void setAdmin(Utilisateur user);
-    /**
-     *
-     * Remove Admin
-     * @param user
-     */
-    public void RemoveAdmin(Utilisateur user);
 
+    /**
+     *
+     * Initilialize the database
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException;
 
+    /**
+     * Check if an user exist in the databse
+     * @param login
+     * @param password
+     */
     public boolean exist(String login , String password) ;
 }

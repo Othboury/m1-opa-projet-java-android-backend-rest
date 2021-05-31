@@ -12,7 +12,6 @@ public class WapRepository  implements  IWapRepository{
         entityManager.getTransaction().begin();
         entityManager.persist(wifiPoint);
         entityManager.getTransaction().commit();
-        System.out.println("saved wifipoint ");
 
     }
     @Override
@@ -27,7 +26,6 @@ public class WapRepository  implements  IWapRepository{
     public WapRepository() {
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("persistence");
         entityManager = entityManagerFactory.createEntityManager();
-        // fullTextSession =  Search.getFullTextEntityManager(entityManager);
     }
 
     public static WapRepository getInstance() {

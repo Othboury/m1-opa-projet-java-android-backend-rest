@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import javax.rmi.CORBA.Util;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
@@ -32,7 +31,6 @@ public class UserRepository extends Observable implements IUserrepository {
         entityManager.getTransaction().begin();
         entityManager.persist(utilisateur);
         entityManager.getTransaction().commit();
-        System.out.println("saved user : ");
 
     }
 
@@ -51,14 +49,13 @@ public class UserRepository extends Observable implements IUserrepository {
     @Override
     public void update(Utilisateur user) {
         try {
-            
+
             entityManager.getTransaction().begin();
             Query q = entityManager.createQuery("update Utilisateur u set u.firstname = :valuefname, u.lastname = :valuelname, u.login = : valuelogin where u.id= :value");
             q.setParameter("valuefname",  user.getFirstname());
             q.setParameter("valuelname",  user.getLastname());
             q.setParameter("valuelogin",  user.getLogin());
             q.setParameter("value",  user.getId());
-            int rowsUpdated = q.executeUpdate();
             entityManager.getTransaction().commit();
         }catch (Exception ex){
             ex.printStackTrace();
@@ -74,42 +71,6 @@ public class UserRepository extends Observable implements IUserrepository {
         entityManager.getTransaction().commit();
     }
 
-    /**
-     * Set new Admin
-     *
-     * @param user
-     */
-    @Override
-    public void setAdmin(Utilisateur user) {
-        try {
-            entityManager.getTransaction().begin();
-            Query q = entityManager.createQuery("update Utilisateur u set u.isAdmin = 1 where u.id= :value");
-            q.setParameter("value",  user.getId());
-            int rowsUpdated = q.executeUpdate();
-            entityManager.getTransaction().commit();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Remove Admin
-     *
-     * @param user
-     */
-    @Override
-    public void RemoveAdmin(Utilisateur user) {
-        try {
-            entityManager.getTransaction().begin();
-            Query q = entityManager.createQuery("update Utilisateur u set u.isAdmin = 0 where u.id= :value");
-            q.setParameter("value",  user.getId());
-            int rowsUpdated = q.executeUpdate();
-            entityManager.getTransaction().commit();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
     @Override
     public Utilisateur findById(int uuid) {
         entityManager.getTransaction().begin();
@@ -121,39 +82,37 @@ public class UserRepository extends Observable implements IUserrepository {
     @Override
     public void init() throws NoSuchAlgorithmException, InvalidKeySpecException {
         entityManager.getTransaction().begin();
+
         Utilisateur  aut1 = Utilisateur.builder()
                 .firstname("pape mor")
                 .lastname("cisse")
-                .login("pucisse200")
-                .isAdmin(true)
+                .login("pcisse200")
+                .isAdmin(false)
                 .build();
-        aut1.setPassword("Djingue1994@");
+        aut1.setPassword("utln");
         Utilisateur  aut2 = Utilisateur.builder()
                 .firstname("admin")
                 .lastname("admin")
                 .login("admin")
-                .isAdmin(false)
+                .isAdmin(true)
                 .build();
         aut2.setPassword("admin");
 
         entityManager.persist(aut1);
-
         entityManager.persist(aut2);
         entityManager.getTransaction().commit();
     }
     @Override
     public boolean exist(String login, String password) {
-         currentUser  = new Utilisateur() ;
+        currentUser  = new Utilisateur() ;
         boolean bool = false ;
-        currentUser.setLogin(login);
-        currentUser.setPassword(password);
 
         List<Utilisateur>  users  = findAll() ;
 
         for (Utilisateur use : users){
-            System.out.println(use.getPassword());
-            if(use.getPassword().equals((currentUser.getPassword()))){ bool=true;
-            currentUser = use ;}
+            if(use.getPassword().equals((HashService.hash(password, use.getSalt()))) && use.getLogin().equals(login)){ bool=true;
+                currentUser = use ;
+               }
         }
         return bool;
     }
@@ -161,7 +120,6 @@ public class UserRepository extends Observable implements IUserrepository {
     public UserRepository() {
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("persistence");
         entityManager = entityManagerFactory.createEntityManager();
-        // fullTextSession =  Search.getFullTextEntityManager(entityManager);
 
     }
 
