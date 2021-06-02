@@ -23,6 +23,7 @@
     </dependencyManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
@@ -39,7 +40,6 @@
             <artifactId>hibernate-search-orm</artifactId>
             <version>5.11.0.CR1</version>
         </dependency>
-
         <!---uncomment this to get JSON support: -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -111,6 +111,13 @@
             <scope>runtime</scope>
         </dependency>
 
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.20</version>
+                <scope>provided</scope>
+            </dependency>
+
         <!-- HTTP2
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
@@ -129,8 +136,14 @@
             <artifactId>glassfish-corba-omgapi</artifactId>
             <version>4.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly.osgi</groupId>
+            <artifactId>grizzly-httpservice-bundle</artifactId>
+            <version>2.4.4</version>
+        </dependency>
 
         -->
+
     </dependencies>
 
     <build>
@@ -161,7 +174,7 @@
                 </configuration>
             </plugin>
             <!-- SSL Certificates -->
-            <plugin>
+            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
                 <version>1.5</version>
@@ -207,36 +220,108 @@
                     <validity>100</validity>
                     <sigalg>SHA256withRSA</sigalg>
                     <keyalg>RSA</keyalg>
-                    <!--dname>cn=com.example</dname-->
                     <dname>cn=localhost</dname>
                 </configuration>
             </plugin>
-          <plugin>
-               <artifactId>maven-assembly-plugin</artifactId>
-               <version>3.0.0</version>
-               <executions>
-                   <execution>
-                       <id>create-executable-jar</id>
-                       <phase>package</phase>
-                       <goals>
-                           <goal>single</goal>
-                       </goals>
-                       <configuration>
-                           <descriptorRefs>
-                               <descriptorRef>
-                                   jar-with-dependencies
-                               </descriptorRef>
-                           </descriptorRefs>
-                           <archive>
-                               <manifest>
-                                   <mainClass>com.example.rest.Main</mainClass>
-                               </manifest>
-                           </archive>
-                       </configuration>
-                   </execution>
-               </executions>
-           </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+            </plugin>
+
+            <!-- Builds a jar that can merge the artifact and its dependencies
+                https://maven.apache.org/plugins/maven-shade-plugin/
+                WARNING minimizeJar can cause trouble, disable it in the child project if needed
+
+                The manifest mainclass can be given with the property ${app.main.class}.
+
+                Its is added to the package phase.
+                -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.3</version>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <minimizeJar>false</minimizeJar>
+                    <!-- The shaded artifact is not the main artifact -->
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>withdependencies</shadedClassifierName>
+
+                    <transformers>
+                        <!-- merge services ressource for SPI -->
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+
+                        <!-- makes a default entry point in the shaded jar -->
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <Main-Class>com.example.rest.Main</Main-Class>
+                                <X-Compile-Source-JDK>${java.version}</X-Compile-Source-JDK>
+                                <X-Compile-Target-JDK>${java.version}</X-Compile-Target-JDK>
+                                <Multi-Release>true</Multi-Release>
+                            </manifestEntries>
+                        </transformer>
+
+                        <!-- keep a default config file -->
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>config.properties</resource>
+                            <resource>log4j.properties</resource>
+                        </transformer>
+                    </transformers>
+
+                    <!-- removes signatures in uberjar -->
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
+
     </build>
 
     <properties>

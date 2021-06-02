@@ -1,35 +1,46 @@
 package com.example.rest.security;
 
+import com.example.rest.models.UserRepository;
 import lombok.SneakyThrows;
 
 import javax.annotation.Priority;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
+import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.Base64;
 import java.util.List;
-
 
 @BasicAuth
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
+
     @Context
     UriInfo uriInfo;
 
     private static final String AUTHORIZATION_HEADED_KEY = "Authorization";
     private static final String AUTHENTICATION_HEADER_PREFIX = "Basic";
+    private UserRepository userRepository = UserRepository.getInstance() ;
+
+    //We inject the data from the acceded resource.
+    @Context
+    private ResourceInfo resourceInfo;
 
 
     @SneakyThrows
     @Override
-    public void filter(ContainerRequestContext requestContext) {
+    public void filter(ContainerRequestContext requestContext){
+        //We use reflection on the acceded method to look for security annotations.
+        Method method = resourceInfo.getResourceMethod();
 
         List<String> authHeader = requestContext.getHeaders().get(AUTHORIZATION_HEADED_KEY);
         if(authHeader.size()>0){
@@ -44,8 +55,25 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             System.out.println("username" + username);
             System.out.println("password" + password);
 
-            if ("admin".equals(username) && "admin".equals(password)){
-                //final SecurityContext securityContext = requestContext.getSecurityContext();
+            //We check to login/password
+            if(!userRepository.exist(username, password)){
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Wrong username or password").build());
+            }
+
+
+            if (userRepository.exist(username, password)){
+
+                //check the role
+                if (method.isAnnotationPresent(RolesAllowed.class)) {
+                    if(!userRepository.getCurrentUser().isAdmin()){
+                        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                                .entity("you have not right access").build());
+
+                    }
+                }
+
+                System.out.println(userRepository.exist(username, password));
                 requestContext.setSecurityContext(new SecurityContext() {
                     @Override
                     public Principal getUserPrincipal() {
@@ -56,14 +84,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                             }
                         };
                     }
-                    /*
-                          public Principal getUserPrincipal() {
-                        Utilisateur userPrincipal = new Utilisateur();
-                        userPrincipal.setFirstname(username);
-                        return (Principal) userPrincipal;
-                    }
-
-                     */
 
                     @Override
                     public boolean isUserInRole(String role) {
@@ -83,9 +103,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 return;
             }
         }
-        Response unauhorizedStatus = Response.status(Response.Status.UNAUTHORIZED).entity("User cannot access the ressource").build();
-        requestContext.abortWith((unauhorizedStatus));
-            }
 
-        }
+    }
+
+}
 

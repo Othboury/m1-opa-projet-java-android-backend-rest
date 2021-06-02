@@ -1,5 +1,6 @@
 package com.example.rest.security;
 
+import com.example.rest.models.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -7,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import lombok.extern.java.Log;
 
 import javax.annotation.Priority;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -15,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+import java.lang.reflect.Method;
 import java.security.Principal;
 
 import static com.example.rest.services.RestService.KEY;
@@ -30,6 +33,7 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
     private static final String AUTHORIZATION_PROPERTY = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
 
+    UserRepository  userRepository = UserRepository.getInstance();
     //We inject the data from the acceded resource.
     @Context
     private ResourceInfo resourceInfo;
@@ -37,6 +41,8 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
 
+        //We use reflection on the acceded method to look for security annotations.
+        Method method = resourceInfo.getResourceMethod();
         //We get the authorization header from the request
         final String authorization = requestContext.getHeaderString(AUTHORIZATION_PROPERTY);
 
@@ -99,5 +105,15 @@ public class JsonWebTokenFilter implements ContainerRequestFilter {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                     .entity("Wrong JWT token. " + e.getLocalizedMessage()).build());
         }
+
+        //checkons the role
+        if (method.isAnnotationPresent(RolesAllowed.class)) {
+            if (!userRepository.getCurrentUser().isAdmin()) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("you have not right access").build());
+
+            }
+        }
     }
+
 }
